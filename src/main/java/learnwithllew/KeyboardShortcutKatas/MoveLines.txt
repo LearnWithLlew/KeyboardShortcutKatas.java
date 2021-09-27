@@ -1,6 +1,6 @@
 Sort the line number below using only move line up/down (you can move multiple lines at a time)
-move line up: alt+↑
-move lline down: alt+↓
+move line up: shift+alt+↑
+move lline down: shift+alt+↓
 
 
 42
