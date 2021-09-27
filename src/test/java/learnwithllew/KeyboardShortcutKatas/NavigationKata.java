@@ -1,16 +1,12 @@
 package learnwithllew.KeyboardShortcutKatas;
 
-import com.spun.util.io.FileUtils;
-import com.spun.util.logger.SimpleLogger;
+import learnwithllew.KeyboardShortcutKatas.languages.*;
 import org.junit.Test;
 import org.lambda.query.Query;
 import org.lambda.query.Queryable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.logging.Logger;
 
 public class NavigationKata {
     @Test
@@ -20,7 +16,7 @@ public class NavigationKata {
                 "I made the wheels from wood. " +
                 "The doors and hinges, all wooden. " +
                 "The engine was tricky to make, but all made from wood, right down to the ebony piston rings." +
-                "It was a beautiful piece of craftsmanship, the only problem with it was that It wooden go.";
+                "It was a beautiful piece of craftsmanship. The only problem with it was that it wooden go.";
         text = text.replaceAll("[\\.,]", " ").replaceAll("  ", " ");
         String[] words = text.split(" ");
         ArrayList<Place> places = new ArrayList<>();
@@ -32,8 +28,23 @@ public class NavigationKata {
                 places.get(i - 1).next = p;
             }
         }
-        printPlaces(places);
-        SimpleLogger.variable("start at ", places.get(0));
+        print(places, new CppPrinter());
+
+
+    }
+
+    private void print(ArrayList<Place> places, Printer printer) {
+             for (int packages = 1; packages <= 4; packages++) {
+                for (int clazz = 1; clazz <= 6; clazz++) {
+                    int pCount = packages;
+                    int cCount = clazz;
+                    Queryable<Place> forClass = Query.where(places, p -> p.packageName == pCount && p.className == cCount);
+                    if (0 < forClass.size()) {
+                        printer.writeFile(forClass);
+                    }
+                }
+            }
+            printer.startAt(places.get(0));
 
     }
 
@@ -46,41 +57,5 @@ public class NavigationKata {
         return p;
     }
 
-    private void printPlaces(ArrayList<Place> places) {
-        for (int packages = 1; packages <= 4; packages++) {
-            for (int clazz = 1; clazz <= 6; clazz++) {
-                int pCount = packages;
-                int cCount = clazz;
-                Queryable<Place> forClass = Query.where(places, p -> p.packageName == pCount && p.className == cCount);
-                if (0 < forClass.size()) {
-                    writeFile(forClass);
-                }
-            }
-        }
-    }
 
-    private void writeFile(Queryable<Place> forClass) {
-        Place place = forClass.get(0);
-        File file = new File("src/main/java/_/" + place.getFile());
-        String text = String.format("package _.%s;\n" +
-                "public class %s { %s" +
-
-                "}", place.getPackageName(), place.getClassName(), getMethods(forClass));
-        FileUtils.writeFile(file, text);
-        //SimpleLogger.event("Writing " + file);
-    }
-
-    private String getMethods(Queryable<Place> forClass) {
-        String text = "";
-        for (Place place : forClass) {
-            Place next = place.next;
-            text += "\n public static void " + place.word + "(){\n";
-
-            if (true && next != null) {
-                text += "_."+next.getPackageName() + "." + next.getClassName() + "." + next.word + "();\n";
-            }
-            text += "}\n";
-        }
-        return text;
-    }
 }
